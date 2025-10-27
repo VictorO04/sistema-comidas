@@ -51,3 +51,33 @@ export const listarUm = async (req, res) => {
         });
     }
 }
+
+export const criar = async (req, res) => {
+    try {
+        const { nome, tipo, preco, descricao } = req.body;
+        const dado = req.body;
+
+        const camposObrigatorios = ["nome", "tipo", "preco", "descricao"];
+
+        const faltando = camposObrigatorios.filter((campo) => !dado[campo]);
+
+        if (faltando.length > 0) {
+            return res.status(400).json({
+              erro: `Os seguintes campos são obrigatórios: ${faltando.join(", ")}.`,
+            });
+          }
+
+        const novaComida = await comidaModel.criar(req.body);
+
+        res.status(201).json({
+            mensagem: 'Comida adicionada com sucesso!',
+            comida: novaComida
+        });
+    } catch (error) {
+        res.status(500).json({
+            erro: 'Erro interno de servidor',
+            detalhes: error.message,
+            status: 500
+        });
+    }
+}
