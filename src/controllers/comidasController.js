@@ -85,20 +85,51 @@ export const criar = async (req, res) => {
 export const deletar = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        const comidaExiste = await comidaModel.encontreUm(id);
-    
+        const dados = req.body;
+
+        const comidaExiste = await ComidaModel.encontreUm(id);
+
         if (!comidaExiste) {
             return res.status(404).json({
-                erro: 'Comida não encontrada com este id',
+                erro: "Comida não existe!",
+                id: id,
+            });
+        }
+
+        const comidaAtualizada = await ComidaModel.atualizar(id, dados);
+
+        res.status(200).json({
+            mensagem: 'Comida atualizado com sucesso!',
+            comida: comidaAtualizada
+        });
+    } catch (error) {
+        res.status(500).json({
+            erro: 'Erro interno de servidor',
+            detalhes: error.message,
+            status: 500
+        });
+    }
+}
+
+export const atualizar = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const dados = req.body;
+
+        const comidaExiste = await comidaModel.encontreUm(id);
+
+        if (!comidaExiste) {
+            return res.status(404).json({
+                erro: 'Comida não existe!',
                 id: id
             });
         }
 
-        await comidaModel.deletar(id);
+        const comidaAtualizada = await comidaModel.atualizar(id, dados);
 
         res.status(200).json({
-            mensagem: 'Comida apagada com sucesso!',
-            comidaRemovida: comidaExiste
+            mensagem: 'Comida atualizada com sucesso',
+            comida: comidaAtualizada
         });
     } catch (error) {
         res.status(500).json({
